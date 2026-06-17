@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Cloud PC - Aluguel de PCs em Nuvem</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #7c3aed;
+  --primary-light: #a78bfa;
+  --primary-dark: #5b21b6;
+  --accent: #06b6d4;
+  --accent2: #8b5cf6;
+  --bg-dark: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-card2: #1a1a2e;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border: rgba(124, 58, 237, 0.2);
+  --glow: rgba(124, 58, 237, 0.4);
+  --green: #22c55e;
+  --gold: #f59e0b;
+  --red: #ef4444;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  overflow-x: hidden;
+}
+html { scroll-behavior: smooth; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+/* ── Background animado ── */
+.bg-grid {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.bg-glow1 {
+  position: fixed; top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(124,58,237,0.15), transparent 70%);
+  pointer-events: none; z-index: 0;
+  animation: floatGlow 8s ease-in-out infinite;
+}
+.bg-glow2 {
+  position: fixed; bottom: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(6,182,212,0.1), transparent 70%);
+  pointer-events: none; z-index: 0;
+  animation: floatGlow 10s ease-in-out infinite reverse;
+}
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+/* ── Navbar ── */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 1000;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  height: 70px;
+}
+.logo {
+  font-size: 24px; font-weight: 900;
+  background: linear-gradient(135deg, var(--primary-light), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+.logo span { font-weight: 400; -webkit-text-fill-color: #a78bfa; }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-muted); text-decoration: none; font-size: 14px;
+  font-weight: 500; transition: color 0.2s; position: relative;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 2px; background: var(--primary);
+  transition: width 0.3s;
+}
+.nav-links a:hover::after { width: 100%; }
+.nav-cta {
+  background: linear-gradient(135deg, var(--primary), var(--accent2));
+  color: #fff !important; padding: 10px 24px; border-radius: 8px;
+  font-weight: 600; font-size: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--glow); }
+.nav-cta::after { display: none !important; }
+
+/* ── Hero ── */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 100vh; display: flex; align-items: center;
+  padding: 120px 40px 80px;
+}
+.hero-inner {
+  max-width: 1200px; margin: 0 auto; width: 100%;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(124, 58, 237, 0.15); border: 1px solid var(--border);
+  padding: 6px 16px; border-radius: 50px; font-size: 13px;
+  color: var(--primary-light); margin-bottom: 20px;
+}
+.hero-badge .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero h1 {
+  font-size: 56px; font-weight: 900; line-height: 1.1;
+  margin-bottom: 20px; letter-spacing: -1.5px;
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--primary-light), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 18px; color: var(--text-muted); line-height: 1.7;
+  margin-bottom: 32px; max-width: 500px;
+}
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 32px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent2));
+  color: #fff; font-weight: 700; font-size: 16px;
+  text-decoration: none; transition: all 0.3s;
+  box-shadow: 0 4px 15px var(--glow);
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px var(--glow);
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 32px; border-radius: 12px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  color: var(--text); font-weight: 600; font-size: 16px;
+  text-decoration: none; transition: all 0.3s;
+}
+.btn-secondary:hover {
+  background: var(--bg-card2); border-color: var(--primary-light);
+  transform: translateY(-3px);
+}
+.hero-stats {
+  display: flex; gap: 40px; margin-top: 48px;
+}
+.hero-stat .num {
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, var(--primary-light), var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-stat .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Hero Right - PC Visual ── */
+.hero-visual {
+  position: relative; display: flex; justify-content: center; align-items: center;
+}
+.pc-card {
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-card2));
+  border: 1px solid var(--border);
+  border-radius: 24px; padding: 40px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.pc-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(6,182,212,0.05));
+  pointer-events: none;
+}
+.pc-icon {
+  font-size: 80px; text-align: center; margin-bottom: 20px;
+  filter: drop-shadow(0 0 20px var(--glow));
+}
+.pc-specs { list-style: none; }
+.pc-specs li {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 15px; color: var(--text-muted);
+}
+.pc-specs li:last-child { border: none; }
+.pc-specs .spec-icon { font-size: 20px; width: 32px; text-align: center; }
+.pc-specs .spec-value { color: #fff; font-weight: 600; }
+.floating-badge {
+  background: var(--bg-card);
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 16px; font-size: 13px; font-weight: 600;
+  animation: float 3s ease-in-out infinite; z-index: 2;
+}
+.floating-badge.top {
+  position: absolute; top: 16px; right: 16px;
+}
+.floating-badge.bottom {
+  display: inline-block; margin-top: 16px; animation-delay: 1.5s;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── Seções ── */
+section {
+  position: relative; z-index: 1;
+  padding: 100px 40px;
+}
+.section-header {
+  text-align: center; margin-bottom: 60px;
+}
+.section-header .tag {
+  display: inline-block;
+  background: rgba(124, 58, 237, 0.15); border: 1px solid var(--border);
+  padding: 6px 16px; border-radius: 50px; font-size: 13px;
+  color: var(--primary-light); margin-bottom: 16px;
+}
+.section-header h2 {
+  font-size: 42px; font-weight: 800; letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+.section-header p { color: var(--text-muted); font-size: 17px; max-width: 600px; margin: 0 auto; }
+
+/* ── Preços ── */
+.pricing-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.price-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px;
+  transition: all 0.3s; position: relative; overflow: hidden;
+}
+.price-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--primary-light);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.15);
+}
+.price-card.featured {
+  border-color: var(--primary);
+  background: linear-gradient(145deg, var(--bg-card), rgba(124,58,237,0.08));
+}
+.price-card.featured::before {
+  content: '🔥 MAIS POPULAR';
+  position: absolute; top: 16px; right: -32px;
+  background: linear-gradient(135deg, var(--primary), var(--accent2));
+  color: #fff; font-size: 11px; font-weight: 700;
+  padding: 6px 40px; transform: rotate(45deg);
+}
+.price-card .duration {
+  font-size: 14px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.price-card .price {
+  font-size: 48px; font-weight: 900; margin-bottom: 4px;
+}
+.price-card .price .currency { font-size: 20px; vertical-align: super; }
+.price-card .per { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+.price-card .features {
+  list-style: none; margin-bottom: 28px;
+}
+.price-card .features li {
+  padding: 8px 0; font-size: 14px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.price-card .features li::before {
+  content: '✓'; color: var(--green); font-weight: 700; font-size: 16px;
+}
+.price-card .btn-card {
+  display: block; text-align: center; padding: 14px;
+  border-radius: 12px; font-weight: 700; font-size: 15px;
+  text-decoration: none; transition: all 0.3s;
+}
+.btn-card-outline {
+  background: transparent; border: 2px solid var(--border);
+  color: var(--text);
+}
+.btn-card-outline:hover {
+  border-color: var(--primary); background: rgba(124,58,237,0.1);
+}
+.btn-card-filled {
+  background: linear-gradient(135deg, var(--primary), var(--accent2));
+  border: 2px solid transparent; color: #fff;
+}
+.btn-card-filled:hover {
+  box-shadow: 0 8px 25px var(--glow);
+}
+
+/* ── Features ── */
+.features-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.feature-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px;
+  transition: all 0.3s;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-light);
+}
+.feature-icon {
+  width: 56px; height: 56px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 20px;
+  background: rgba(124, 58, 237, 0.15);
+}
+.feature-card h3 {
+  font-size: 18px; font-weight: 700; margin-bottom: 10px;
+}
+.feature-card p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+
+/* ── Apps ── */
+.apps-grid {
+  max-width: 800px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.app-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px 16px; text-align: center;
+  transition: all 0.3s;
+}
+.app-item:hover {
+  transform: translateY(-5px); border-color: var(--primary-light);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.app-item .app-icon { font-size: 40px; margin-bottom: 12px; }
+.app-item .app-name { font-size: 13px; font-weight: 600; }
+.app-item .app-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Setup ── */
+.setup-steps {
+  max-width: 800px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.step {
+  display: flex; gap: 24px; align-items: flex-start;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  transition: all 0.3s;
+}
+.step:hover { border-color: var(--primary-light); transform: translateX(8px); }
+.step-num {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; flex-shrink: 0;
+}
+.step-content h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.step-content p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+.step-content a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.step-content a:hover { text-decoration: underline; }
+
+/* ── Avisos ── */
+.notices {
+  max-width: 800px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.notice {
+  display: flex; gap: 16px; align-items: center;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px;
+}
+.notice-icon { font-size: 24px; flex-shrink: 0; }
+.notice-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+.notice-text strong { color: #fff; }
+
+/* ── CTA Final ── */
+.cta-section {
+  text-align: center; padding: 80px 40px 120px;
+}
+.cta-box {
+  max-width: 700px; margin: 0 auto;
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-card2));
+  border: 1px solid var(--border); border-radius: 24px;
+  padding: 60px 40px; position: relative; overflow: hidden;
+}
+.cta-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(124,58,237,0.15), transparent 60%);
+  pointer-events: none;
+}
+.cta-box h2 { font-size: 36px; font-weight: 800; margin-bottom: 16px; position: relative; }
+.cta-box p { color: var(--text-muted); font-size: 16px; margin-bottom: 32px; position: relative; }
+
+/* ── Footer ── */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+}
+footer p { color: var(--text-muted); font-size: 13px; }
+footer a { color: var(--primary-light); text-decoration: none; }
+
+/* ── Mobile ── */
+@media (max-width: 1024px) {
+  .pricing-grid, .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 36px; }
+  .hero-visual { display: none; }
+  .nav-links { display: none; }
+  .pricing-grid, .features-grid { grid-template-columns: 1fr; }
+  .apps-grid { grid-template-columns: repeat(2, 1fr); }
+  section { padding: 60px 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .hero-stats { gap: 24px; }
+  .hero-stat .num { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow1"></div>
+<div class="bg-glow2"></div>
+
+<!-- ── Navbar ── -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="logo">ZERO<span>CLOUD</span> PC</div>
+    <div class="nav-links">
+      <a href="#precos">Preços</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#apps">Apps</a>
+      <a href="#setup">Como Funciona</a>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="nav-cta">🎮 Entrar no Discord</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <div class="dot"></div>
+        PCs disponíveis agora
+      </div>
+      <h1>Alugue um <span class="gradient">PC Gamer</span> na Nuvem por apenas <span class="gradient">R$3/hora</span></h1>
+      <p>Acesse PCs potentes de qualquer lugar do Brasil. Jogue, trabalhe e produza sem precisar de hardware caro. Funciona em qualquer Windows!</p>
+      <div class="hero-btns">
+        <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-primary">
+          💬 Alugar Agora
+        </a>
+        <a href="#precos" class="btn-secondary">
+          💰 Ver Preços
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">R$3</div>
+          <div class="label">por hora</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">24/7</div>
+          <div class="label">disponível</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">⚡</div>
+          <div class="label">baixa latência</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="pc-card">
+        <div class="floating-badge top">🟢 Online</div>
+        <div class="pc-icon">🖥️</div>
+        <ul class="pc-specs">
+          <li>
+            <span class="spec-icon">🔥</span>
+            <span>GPU <span class="spec-value">RTX / Radeon RX</span></span>
+          </li>
+          <li>
+            <span class="spec-icon">⚡</span>
+            <span>CPU <span class="spec-value">Alta Performance</span></span>
+          </li>
+          <li>
+            <span class="spec-icon">💾</span>
+            <span>RAM <span class="spec-value">16GB+</span></span>
+          </li>
+          <li>
+            <span class="spec-icon">💿</span>
+            <span>SSD <span class="spec-value">NVMe Rápido</span></span>
+          </li>
+          <li>
+            <span class="spec-icon">🌐</span>
+            <span>Internet <span class="spec-value">Alta Velocidade</span></span>
+          </li>
+        </ul>
+        <div class="floating-badge bottom">🎮 GTA V / FiveM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Preços ── -->
+<section id="precos">
+  <div class="section-header">
+    <div class="tag">💰 PREÇOS</div>
+    <h2>Planos para todos os bolsos</h2>
+    <p>Escolha o plano ideal para sua necessidade. Quanto mais tempo, mais barato!</p>
+  </div>
+  <div class="pricing-grid">
+
+    <div class="price-card">
+      <div class="duration">1 Hora</div>
+      <div class="price"><span class="currency">R$</span>3</div>
+      <div class="per">por hora • verificar disponibilidade</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte via Discord</li>
+        <li>Parsec ou Moonlight</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-outline">Alugar</a>
+    </div>
+
+    <div class="price-card">
+      <div class="duration">5 Horas</div>
+      <div class="price"><span class="currency">R$</span>10</div>
+      <div class="per">R$2,00/hora • economia de 33%</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte via Discord</li>
+        <li>Parsec ou Moonlight</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-outline">Alugar</a>
+    </div>
+
+    <div class="price-card featured">
+      <div class="duration">Até as 10h (dia seguinte)</div>
+      <div class="price"><span class="currency">R$</span>15</div>
+      <div class="per">período noturno • melhor custo-benefício</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte via Discord</li>
+        <li>Parsec ou Moonlight</li>
+        <li>FiveM já instalado!</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-filled">Alugar Agora</a>
+    </div>
+
+    <div class="price-card">
+      <div class="duration">1 Dia</div>
+      <div class="price"><span class="currency">R$</span>20</div>
+      <div class="per">24 horas completas</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte via Discord</li>
+        <li>Parsec ou Moonlight</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-outline">Alugar</a>
+    </div>
+
+    <div class="price-card">
+      <div class="duration">1 Semana</div>
+      <div class="price"><span class="currency">R$</span>75</div>
+      <div class="per">7 dias • ~R$10,71/dia</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte prioritário</li>
+        <li>Parsec ou Moonlight</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-outline">Alugar</a>
+    </div>
+
+    <div class="price-card featured">
+      <div class="duration">1 Mês</div>
+      <div class="price"><span class="currency">R$</span>280</div>
+      <div class="per">30 dias • ~R$9,33/dia • MELHOR VALOR</div>
+      <ul class="features">
+        <li>Acesso imediato ao PC</li>
+        <li>Todos os jogos instalados</li>
+        <li>Suporte prioritário</li>
+        <li>Parsec ou Moonlight</li>
+        <li>FiveM já instalado!</li>
+      </ul>
+      <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-card btn-card-filled">Alugar Agora</a>
+    </div>
+
+  </div>
+  <div style="text-align:center; margin-top:24px;">
+    <p style="color:var(--text-muted); font-size:14px;">⚠️ O valor avulso de horas depende da disponibilidade de PCs no momento.</p>
+  </div>
+</section>
+
+<!-- ── Recursos ── -->
+<section id="recursos">
+  <div class="section-header">
+    <div class="tag">⚡ RECURSOS</div>
+    <h2>Por que escolher a ZeroCloud?</h2>
+    <p>Infraestrutura de ponta para você jogar e trabalhar sem complicação</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎮</div>
+      <h3>Jogos Pré-Instalados</h3>
+      <p>GTA V, FiveM e diversos outros jogos já instalados e prontos para jogar. Sem downloads demorados!</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🖥️</div>
+      <h3>Hardware Potente</h3>
+      <p>PCs com GPU RTX, CPU de alta performance, SSD NVMe e internet de alta velocidade.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌍</div>
+      <h3>Acesse de Qualquer Lugar</h3>
+      <p>Funciona em qualquer Windows e é compatível com todos os tipos de celulares! Conecte via Parsec ou Moonlight para a melhor experiência.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Baixa Latência</h3>
+      <p>Servidores otimizados para garantir a menor latência possível. Jogue sem lag!</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Suporte via Discord</h3>
+      <p>Equipe disponível no Discord para tirar dúvidas e resolver problemas rapidamente.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔧</div>
+      <h3>Consultoria Técnica</h3>
+      <p>Precisa de ajuda com seu próprio PC? Oferecemos consultoria via ticket (serviço pago).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Apps ── -->
+<section id="apps">
+  <div class="section-header">
+    <div class="tag">📦 APLICATIVOS</div>
+    <h2>Pronto para usar</h2>
+    <p>Seus apps e jogos favoritos já instalados e configurados</p>
+  </div>
+  <div class="apps-grid">
+    <div class="app-item">
+      <div class="app-icon">🎮</div>
+      <div class="app-name">GTA V</div>
+      <div class="app-desc">Pré-instalado</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🏙️</div>
+      <div class="app-name">FiveM</div>
+      <div class="app-desc">Sem conta necessária</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🟢</div>
+      <div class="app-name">Parsec</div>
+      <div class="app-desc">Recomendado</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🌙</div>
+      <div class="app-name">Moonlight</div>
+      <div class="app-desc">Alternativa</div>
+      <a href="https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.1.0/MoonlightSetup-6.1.0.exe" target="_blank" style="display:inline-block; margin-top:8px; font-size:11px; color:var(--accent); text-decoration:none; font-weight:600;">📥 Download</a>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🎙️</div>
+      <div class="app-name">Discord</div>
+      <div class="app-desc">Pré-instalado</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🌐</div>
+      <div class="app-name">Chrome</div>
+      <div class="app-desc">Pré-instalado</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">🎬</div>
+      <div class="app-name">Streaming</div>
+      <div class="app-desc">Netflix, YT, etc</div>
+    </div>
+    <div class="app-item">
+      <div class="app-icon">📁</div>
+      <div class="app-name">WinRAR</div>
+      <div class="app-desc">Pré-instalado</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Como Funciona ── -->
+<section id="setup">
+  <div class="section-header">
+    <div class="tag">🚀 COMO FUNCIONA</div>
+    <h2>Comece em 3 passos</h2>
+    <p>Configuração simples e rápida para você jogar em minutos</p>
+  </div>
+  <div class="setup-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Entre no Discord e escolha seu plano</h3>
+        <p>Acesse nosso servidor no Discord e abra um ticket para comprar. Escolha o plano que melhor se encaixa na sua necessidade.</p>
+        <a href="https://discord.gg/3NRbXTd8" target="_blank">→ Entrar no Discord</a>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Instale o Parsec ou Moonlight</h3>
+        <p>Baixe o Parsec (recomendado) e crie uma conta gratuita. É com ele que você vai acessar o PC na nuvem.</p>
+        <a href="https://parsec.app/downloads" target="_blank">→ Download Parsec</a> &nbsp;
+        <a href="https://dash.parsec.app/signup/" target="_blank">→ Criar Conta</a>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Conecte e jogue!</h3>
+        <p>Receba o acesso ao PC, conecte via Parsec e comece a jogar. Todos os jogos já estão instalados e prontos!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Avisos ── -->
+<section>
+  <div class="section-header">
+    <div class="tag">📌 INFORMAÇÕES</div>
+    <h2>Informações Importantes</h2>
+  </div>
+  <div class="notices">
+    <div class="notice">
+      <div class="notice-icon">🏙️</div>
+      <div class="notice-text"><strong>FiveM já instalado!</strong> Não precisa de conta. É só conectar e jogar no seu servidor favorito.</div>
+    </div>
+    <div class="notice">
+      <div class="notice-icon">🖥️</div>
+      <div class="notice-text"><strong>Funciona em qualquer Windows!</strong> PCs agora compatíveis com todas as versões do Windows.</div>
+    </div>
+    <div class="notice">
+      <div class="notice-icon">🟢</div>
+      <div class="notice-text"><strong>Preferência para Parsec ou Moonlight.</strong> Para a melhor experiência, tenha um dos dois instalado no seu PC.</div>
+    </div>
+    <div class="notice">
+      <div class="notice-icon">🔧</div>
+      <div class="notice-text"><strong>Consultoria técnica disponível!</strong> Precisa de ajuda com seu próprio PC ou jogos? Abra um ticket (serviço pago).</div>
+    </div>
+    <div class="notice">
+      <div class="notice-icon">⚠️</div>
+      <div class="notice-text"><strong>Horas avulsas:</strong> O valor pode variar conforme a disponibilidade de PCs. Verifique no Discord antes de comprar.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Final ── -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Pronto para jogar? 🎮</h2>
+    <p>Entre no nosso Discord, escolha seu plano e comece a jogar em minutos!</p>
+    <a href="https://discord.gg/3NRbXTd8" target="_blank" class="btn-primary" style="font-size:18px; padding: 18px 40px;">
+      💬 Entrar no Discord
+    </a>
+    <div style="margin-top: 24px;">
+      <a href="https://parsec.app/downloads" target="_blank" class="btn-secondary" style="font-size:14px; padding: 12px 24px;">
+        📥 Download Parsec
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>© 2025 ZeroCloud PC — Todos os direitos reservados</p>
+  <p style="margin-top:8px;">
+    <a href="https://discord.gg/3NRbXTd8" target="_blank">Discord</a> •
+    <a href="https://parsec.app/downloads" target="_blank">Parsec</a> •
+    <a href="https://dash.parsec.app/signup/" target="_blank">Criar Conta Parsec</a>
+  </p>
+</footer>
+
+<script>
+// Navbar scroll effect
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Animate elements on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.price-card, .feature-card, .app-item, .step, .notice').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(30px)';
+  el.style.transition = 'opacity 0.6s, transform 0.6s';
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
